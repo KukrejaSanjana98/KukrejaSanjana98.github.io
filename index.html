@@ -1,0 +1,144 @@
+<html>
+    <head>
+        <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+        <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+        <title>Vegalite Visualization.</title>
+    </head>
+    <body>
+	<h3>Assignment 3 </h3>
+        <p>
+            We have a scatter plot which shows the relationship between Square Footage of Buildings Acquired and the Year Acquired for the Year 1800 to 2010,
+	    We can see from the Visualization that most of the square footage or building acquired were in the year 1940 to 2000.
+        </p>
+        <div id="myviz">
+        </div>
+    </body>
+    <script>
+        mySpec = {
+  "$schema": "https://vega.github.io/schema/vega/v5.json",
+  "background": "white",
+  "padding": 5,
+  "width": 500,
+  "height": 200,
+  "style": "cell",
+  "data": [
+    {
+      "name": "source_0",
+      "url": "https://raw.githubusercontent.com/KukrejaSanjana98/KukrejaSanjana98.github.io/main/building_inventory.csv",
+      "format": {
+        "type": "csv",
+        "parse": {"Year Acquired": "date"},
+        "delimiter": ","
+      },
+      "transform": [
+        {
+          "type": "stack",
+          "groupby": ["Year Acquired"],
+          "field": "Square Footage",
+          "sort": {"field": [], "order": []},
+          "as": ["Square Footage_start", "Square Footage_end"],
+          "offset": "zero"
+        },
+        {
+          "type": "filter",
+          "expr": "(isDate(datum[\"Year Acquired\"]) || (isValid(datum[\"Year Acquired\"]) && isFinite(+datum[\"Year Acquired\"]))) && isValid(datum[\"Square Footage\"]) && isFinite(+datum[\"Square Footage\"])"
+        }
+      ]
+    }
+  ],
+  "marks": [
+    {
+      "name": "marks",
+      "type": "rect",
+      "style": ["bar"],
+      "from": {"data": "source_0"},
+      "encode": {
+        "update": {
+          "fill": {"value": "#4c78a8"},
+          "ariaRoleDescription": {"value": "bar"},
+          "description": {
+            "signal": "\"Year Acquired: \" + (timeFormat(datum[\"Year Acquired\"], '%b %d, %Y')) + \"; Square Footage: \" + (format(datum[\"Square Footage\"], \"\"))"
+          },
+          "xc": {"scale": "x", "field": "Year Acquired"},
+          "width": {"value": 5},
+          "y": {"scale": "y", "field": "Square Footage_end"},
+          "y2": {"scale": "y", "field": "Square Footage_start"}
+        }
+      }
+    }
+  ],
+  "scales": [
+    {
+      "name": "x",
+      "type": "time",
+      "domain": {"data": "source_0", "field": "Year Acquired"},
+      "range": [0, {"signal": "width"}],
+      "padding": 5
+    },
+    {
+      "name": "y",
+      "type": "linear",
+      "domain": {
+        "data": "source_0",
+        "fields": ["Square Footage_start", "Square Footage_end"]
+      },
+      "range": [{"signal": "height"}, 0],
+      "nice": true,
+      "zero": true
+    }
+  ],
+  "axes": [
+    {
+      "scale": "x",
+      "orient": "bottom",
+      "gridScale": "y",
+      "grid": true,
+      "tickCount": {"signal": "ceil(width/40)"},
+      "domain": false,
+      "labels": false,
+      "aria": false,
+      "maxExtent": 0,
+      "minExtent": 0,
+      "ticks": false,
+      "zindex": 0
+    },
+    {
+      "scale": "y",
+      "orient": "left",
+      "gridScale": "x",
+      "grid": true,
+      "tickCount": {"signal": "ceil(height/40)"},
+      "domain": false,
+      "labels": false,
+      "aria": false,
+      "maxExtent": 0,
+      "minExtent": 0,
+      "ticks": false,
+      "zindex": 0
+    },
+    {
+      "scale": "x",
+      "orient": "bottom",
+      "grid": false,
+      "title": "Year Acquired",
+      "labelFlush": true,
+      "labelOverlap": true,
+      "tickCount": {"signal": "ceil(width/40)"},
+      "zindex": 0
+    },
+    {
+      "scale": "y",
+      "orient": "left",
+      "grid": false,
+      "title": "Square Footage",
+      "labelOverlap": true,
+      "tickCount": {"signal": "ceil(height/40)"},
+      "zindex": 0
+    }
+  ],
+  "config": {}
+};
+        vegaEmbed('#myviz', mySpec);
+    </script>
+</html>
